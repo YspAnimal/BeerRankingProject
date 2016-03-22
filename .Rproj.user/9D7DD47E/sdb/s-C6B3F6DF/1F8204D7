@@ -1,0 +1,25 @@
+{
+    "contents" : "",
+    "created" : 1458651061022.000,
+    "dirty" : false,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "1F8204D7",
+    "lastKnownWriteTime" : 0,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "cacheKey" : "4004j9o6d6",
+        "caption" : "beer_styles",
+        "contentUrl" : "grid_resource/gridviewer.html?env=&obj=beer_styles&cache_key=4004j9o6d6",
+        "displayedObservations" : 86,
+        "environment" : "",
+        "object" : "beer_styles",
+        "totalObservations" : 86,
+        "variables" : 3
+    },
+    "relative_order" : 4,
+    "source_on_save" : false,
+    "type" : "r_dataframe"
+}
