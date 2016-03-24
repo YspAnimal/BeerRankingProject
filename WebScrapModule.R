@@ -2,22 +2,21 @@ library(rvest)
 library(reshape2)
 
 beer_page <- read_html("http://www.ratebeer.com/beerstyles") # Set WEB-page of beer ranking
-
 beer_Groups <- html_text(html_nodes(beer_page, ".groupname")) # Get Global beer groups 
-
 beer_stylesHTML <- html_nodes(beer_page, ".styleGroup") # Get beer styles nodes
-beer_stylesHTML <- lapply(beer_stylesHTML, function(x) {html_nodes(x, "li")}) # Prepare to trensform to list
+beer_stylesHTML <- lapply(beer_stylesHTML, function(x) {html_nodes(x, "li")}) # Prepare to transform to list
 beer_styles <- lapply(beer_stylesHTML, html_text) # Get list of beer styles
-names(beer_styles) <- beer_Groups
-beer_styles <- melt(beer_styles)
+names(beer_styles) <- beer_Groups # Rename beer styles list
+beer_styles <- melt(beer_styles) # melt list to data frame
+beer_linksHTML <- lapply(beer_stylesHTML, function(x) {html_nodes(x, "a")}) # extract information about links
+beer_links <- lapply(beer_linksHTML, function(x) {html_attr(x, "href")}) # Get beer styles links to own web page
+beer_links <- unlist(beer_links) # Unlist it to vector
+beer_styles <- cbind(beer_styles, beer_links) # Create one data set, thet contains information about all of characteristic of beer
+names(beer_styles) <- c("Style", "Type", "Link") # Rename columns in dataset
 
-beer_linksHTML <- lapply(beer_stylesHTML, function(x) {html_nodes(x, "a")})
-beer_links <- lapply(beer_linksHTML, function(x) {html_attr(x, "href")})
-beer_links <- unlist(beer_links)
 
-beer_styles <- cbind(beer_styles, beer_links)
 
-names(beer_styles) <- c("Style", "Type", "Link")
+
 
 
 # str(beer_styles)
