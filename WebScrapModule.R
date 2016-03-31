@@ -2,7 +2,7 @@ library(rvest)
 library(reshape2)
 
 ##Get Beer styles table
-function GetBeerStylesDataframe(link) {
+GetBeerStylesDataframe <- function (link) {
         beer_page <-
                 read_html(link) # Set WEB-page of beer ranking
         beer_Groups <-
@@ -35,9 +35,43 @@ function GetBeerStylesDataframe(link) {
 
 ##Get beers list from style link
 
+stylesFrame <- GetBeerStylesDataframe("http://www.ratebeer.com/beerstyles")
+
+styleLink <- as.vector(stylesFrame$Link[[1]])
+StylePage <- paste0("http://www.ratebeer.com", styleLink)
+
+#GetBeersTable
 
 
 
+BeersTableHTML <- read_html(StylePage) 
+ScriptTXT <- html_nodes(BeersTableHTML, "script") 
+ScriptTXT <- html_text(ScriptTXT[9])
+
+
+
+
+
+
+
+
+
+##Test PhantomJS
+# write out a script phantomjs can process
+# library(RSelenium)
+# pJS <- phantom()
+# remDr <- remoteDriver(browserName = "chrome")
+# remDr$open()
+# remDr$navigate(StylePage)# process it with phantomjs
+# result <- remDr$phantomExecute("var page = http://www.ratebeer.com/beerstyles/abbey-dubbel/71/;
+#                                var fs = require('fs');
+#                                page.onLoadFinished = function(status) {
+#                                var file = fs.open('output.htm', \"w\");
+#                                file.write(page.content);
+#                                file.close();
+#                                phantom.exit();
+#                                };")
+# 
 
 
 
