@@ -44,12 +44,12 @@ StylePage <- paste0("http://www.ratebeer.com", styleLink)
 
 
 
-BeersTableHTML <- read_html(StylePage) 
-ScriptTXT <- html_nodes(BeersTableHTML, "script") 
-ScriptTXT <- html_text(ScriptTXT[9])
+ScriptTXT <- read_html(StylePage) %>% html_nodes("script")
+ScriptTXT <- html_text(ScriptTXT[9]) %>% strsplit("[\r\n\t]") %>% unlist
 
+needPar <- ScriptTXT[c(6,9,12,15,18,21,24,27)]
 
-
+gsub('[[:punct:]]', "", needPar)
 
 
 
