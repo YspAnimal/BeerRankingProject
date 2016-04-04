@@ -34,17 +34,18 @@ GetBeerStylesDataframe <- function (link) {
 }
 
 ##Get beers list from style link
-
 stylesFrame <- GetBeerStylesDataframe("http://www.ratebeer.com/beerstyles")
-
-styleLink <- as.vector(stylesFrame$Link[[1]])
+styleLink <- as.vector(stylesFrame$Link[[4]])
 StylePage <- paste0("http://www.ratebeer.com", styleLink)
 
 #GetBeersTable
 ScriptTXT <- read_html(StylePage) %>% html_nodes("script")
 ScriptTXT <- html_text(ScriptTXT[9]) %>% strsplit("[\r\n\t]") %>% unlist
 needPar <- ScriptTXT[c(6,9,12,15,18,21,24,27)]
-needPar <- gsub('([[:punct:]])([[:alpha:]]*)([[:blank:]]*)', "", needPar)
+needParVal <- gsub('([[:punct:]])([[:alpha:]]*)([[:blank:]]*)', "", needPar)
+needParNames <- gsub('([[:punct:]]*)([[:blank:]]*)', "", needPar)
+needParNames <- gsub('[[:digit:]]*', "", needParNames)
+needPar <- cbind(needParNames, needParVal)
 
 
 
