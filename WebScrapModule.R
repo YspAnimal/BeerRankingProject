@@ -1,5 +1,5 @@
-library(rvest)
-library(reshape2)
+require(rvest)
+require(reshape2)
 
 ##Get Beer styles table
 GetBeerStylesDataframe <- function (link) {
@@ -33,6 +33,8 @@ GetBeerStylesDataframe <- function (link) {
         return(beer_styles)
 }
 
+
+
 ##Get beers list from style link
 stylesFrame <- GetBeerStylesDataframe("http://www.ratebeer.com/beerstyles")
 styleLink <- as.vector(stylesFrame$Link[[4]])
@@ -46,6 +48,8 @@ needParVal <- gsub('([[:punct:]])([[:alpha:]]*)([[:blank:]]*)', "", needPar)
 needParNames <- gsub('([[:punct:]]*)([[:blank:]]*)', "", needPar)
 needParNames <- gsub('[[:digit:]]*', "", needParNames)
 needPar <- cbind(needParNames, needParVal)
+
+
 
 
 
