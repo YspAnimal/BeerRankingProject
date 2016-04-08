@@ -1,0 +1,17 @@
+{
+    "contents" : "#Work in default working directory\n#Download file, unzip it if it does not exist\nURL <- \"https://d396qusza40orc.cloudfront.net/exdata%2Fdata%2Fhousehold_power_consumption.zip\"\ndestFile <- \"power_consumption.zip\"\nif (!file.exists(destFile)){\n  download.file(URL, destfile = destFile, mode='wb')\n  unzip(destFile)\n}\n#Try to read subset of data using SQL methods(just for practice) \nlibrary(RSQLite)\n# Create/Connect to a database\ncon <- dbConnect(RSQLite::SQLite(), dbname = \":memory:\")\n\n# read txt file into temp sql database\ndbWriteTable(con, name=\"household_power_consumption\", value=\"household_power_consumption.txt\", \n             row.names=F, header=T, sep = \";\")\n\n# Query your data as you like\nPowerDataFeb <- dbGetQuery(con, \"SELECT * FROM household_power_consumption WHERE (Date = '1/2/2007' or Date = '2/2/2007')\")\n#Close connection\ndbDisconnect(con)\n\n#Convert the Date and Time variables to Date/Time classes \nPowerDataFeb$Date <- as.Date(PowerDataFeb$Date, format = \"%d/%m/%Y\")\nPowerDataFeb$timetemp <- paste(PowerDataFeb$Date, PowerDataFeb$Time)\nPowerDataFeb$Time <- strptime(PowerDataFeb$timetemp, format = \"%Y-%m-%d %H:%M:%S\")\n\n#Open graphic device PNG\npng(filename = \"plot3.png\", width = 480, height = 480, units = \"px\")\n#Draw figure LinesPlot\nplot(PowerDataFeb$Time, PowerDataFeb$Sub_metering_1, type = \"l\", col = \"black\", ylab = \"Energy sub metering\", xlab = \"\")\n#Add new lines for each figure\nlines(PowerDataFeb$Time, PowerDataFeb$Sub_metering_2, type = \"l\", col = \"red\", ylab = \"Energy sub metering\", xlab = \"\")\nlines(PowerDataFeb$Time, PowerDataFeb$Sub_metering_3, type = \"l\", col = \"blue\", ylab = \"Energy sub metering\", xlab = \"\")\n#Add legend for figure\nlegend(\"topright\", c(\"Sub_metering_1\", \"Sub_metering_2\", \"Sub_metering_3\"), col = c(\"black\", \"red\", \"blue\"), lty = 1)\ndev.off()\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+    "created" : 1459840258373.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3644754173",
+    "id" : "A68A46E6",
+    "lastKnownWriteTime" : 1444378756,
+    "path" : "C:/R_repositories/Coursera/Exploratory_Data_Analysis/Exploratory_Data_Analysis_CourseProject1/plot3.R",
+    "project_path" : null,
+    "properties" : {
+    },
+    "relative_order" : 4,
+    "source_on_save" : false,
+    "type" : "r_source"
+}

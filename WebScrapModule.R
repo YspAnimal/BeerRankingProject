@@ -34,6 +34,7 @@ GetBeerStylesDataframe <- function (link) {
 }
 
 
+####Try to aggregate full information about beer styles in one dataFrame
 
 ##Get beers list from style link
 stylesFrame <- GetBeerStylesDataframe("http://www.ratebeer.com/beerstyles")
@@ -47,7 +48,10 @@ needPar <- ScriptTXT[c(6,9,12,15,18,21,24,27)]
 needParVal <- gsub('([[:punct:]])([[:alpha:]]*)([[:blank:]]*)', "", needPar)
 needParNames <- gsub('([[:punct:]]*)([[:blank:]]*)', "", needPar)
 needParNames <- gsub('[[:digit:]]*', "", needParNames)
-needPar <- cbind(needParNames, needParVal)
+
+ParDataFrame <- as.data.frame(rbind(needParVal))
+names(ParDataFrame) <- needParNames
+#needPar <- cbind(needParNames, needParVal)
 
 
 
