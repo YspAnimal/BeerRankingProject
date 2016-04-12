@@ -48,17 +48,21 @@ ParDataFrame <- data.frame(style=character(),
                            mine=character(),
                            stringsAsFactors=FALSE)
 
-
+parlist <- list()
 
 for (i in 1:nrow(stylesFrame)) {
-        styleLink <- as.vector(stylesFrame$Link[[10]])
+        styleLink <- as.vector(stylesFrame$Link[[i]])
         StylePage <- paste0("http://www.ratebeer.com", styleLink)
         ScriptTXT <- read_html(StylePage) %>% html_nodes("script")
         ScriptTXT <- html_text(ScriptTXT[9]) %>% strsplit("[\r\n\t]") %>% unlist
         needPar <- ScriptTXT[c(6,9,12,15,18,21,24,27)]
         needParVal <- gsub('([[:punct:]])([[:alpha:]]*)([[:blank:]]*)', "", needPar)
-        ParDataFrame <- rbind(ParDataFrame, needParVal)
+        parlist[[i]] <- needParVal
 }
+
+parlist <- do.call(rbind, parlist)
+stylesFrame <- cbind(stylesFrame, parlist)
+
 needParVal <- gsub('([[:punct:]])([[:alpha:]]*)([[:blank:]]*)', "", needPar)
 needParNames <- gsub('([[:punct:]]*)([[:blank:]]*)', "", needPar)
 needParNames <- gsub('[[:digit:]]*', "", needParNames)

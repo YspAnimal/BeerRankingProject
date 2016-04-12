@@ -10,14 +10,14 @@
     "path" : null,
     "project_path" : null,
     "properties" : {
-        "cacheKey" : "sx37tdr0xc",
+        "cacheKey" : "v3rsan7qyu",
         "caption" : "stylesFrame",
-        "contentUrl" : "grid_resource/gridviewer.html?env=&obj=stylesFrame&cache_key=sx37tdr0xc",
-        "displayedObservations" : 86,
+        "contentUrl" : "grid_resource/gridviewer.html?env=&obj=stylesFrame&cache_key=v3rsan7qyu",
+        "displayedObservations" : "86",
         "environment" : "",
         "object" : "stylesFrame",
-        "totalObservations" : 86,
-        "variables" : 3
+        "totalObservations" : "86",
+        "variables" : "11"
     },
     "relative_order" : 4,
     "source_on_save" : false,
