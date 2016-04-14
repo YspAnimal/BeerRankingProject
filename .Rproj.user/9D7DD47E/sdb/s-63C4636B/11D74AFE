@@ -1,0 +1,25 @@
+{
+    "contents" : "",
+    "created" : 1460615785987.000,
+    "dirty" : false,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "11D74AFE",
+    "lastKnownWriteTime" : 7011605692497750387,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "cacheKey" : "6nghw6igxz",
+        "caption" : "beerTable",
+        "contentUrl" : "grid_resource/gridviewer.html?env=&obj=beerTable&cache_key=6nghw6igxz",
+        "displayedObservations" : "50",
+        "environment" : "",
+        "object" : "beerTable",
+        "totalObservations" : "50",
+        "variables" : "6"
+    },
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "type" : "r_dataframe"
+}
