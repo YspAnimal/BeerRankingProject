@@ -1,25 +1,25 @@
 {
     "contents" : "",
-    "created" : 1460615785987.000,
+    "created" : 1461139350902.000,
     "dirty" : false,
     "encoding" : "",
     "folds" : "",
     "hash" : "0",
-    "id" : "11D74AFE",
+    "id" : "6578F655",
     "lastKnownWriteTime" : 7011605692497750387,
     "path" : null,
     "project_path" : null,
     "properties" : {
-        "cacheKey" : "6nghw6igxz",
+        "cacheKey" : "7av9wj0jqs",
         "caption" : "beerTable",
-        "contentUrl" : "grid_resource/gridviewer.html?env=&obj=beerTable&cache_key=6nghw6igxz",
-        "displayedObservations" : "50",
+        "contentUrl" : "grid_resource/gridviewer.html?env=&obj=beerTable&cache_key=7av9wj0jqs",
+        "displayedObservations" : "3852",
         "environment" : "",
         "object" : "beerTable",
-        "totalObservations" : "50",
+        "totalObservations" : "3852",
         "variables" : "6"
     },
-    "relative_order" : 3,
+    "relative_order" : 2,
     "source_on_save" : false,
     "type" : "r_dataframe"
 }

@@ -1,0 +1,25 @@
+{
+    "contents" : "",
+    "created" : 1461151181233.000,
+    "dirty" : false,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "4CAB58AD",
+    "lastKnownWriteTime" : 7002645987176248109,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "cacheKey" : "xtaf168q3y",
+        "caption" : "parlist",
+        "contentUrl" : "grid_resource/gridviewer.html?env=&obj=parlist&cache_key=xtaf168q3y",
+        "displayedObservations" : 86,
+        "environment" : "",
+        "object" : "parlist",
+        "totalObservations" : 86,
+        "variables" : 8
+    },
+    "relative_order" : 5,
+    "source_on_save" : false,
+    "type" : "r_dataframe"
+}

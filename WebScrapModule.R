@@ -1,5 +1,9 @@
 require(rvest)
 require(reshape2)
+require(stringr)
+require(plyr)
+require(sqldf)
+
 
 ##Get Beer styles table
 GetBeerStylesDataframe <- function (link) {
@@ -36,15 +40,15 @@ GetBeerStylesDataframe <- function (link) {
 
 ##Get beers list from style link
 stylesFrame <- GetBeerStylesDataframe("http://www.ratebeer.com/beerstyles")
-ParDataFrame <- data.frame(style=character(),
-                           sort=character(),
-                           order=character(),
-                           min=character(),
-                           max=character(),
-                           retired=character(),
-                           new=character(),
-                           mine=character(),
-                           stringsAsFactors=FALSE)
+# ParDataFrame <- data.frame(style=character(),
+#                            sort=character(),
+#                            order=character(),
+#                            min=character(),
+#                            max=character(),
+#                            retired=character(),
+#                            new=character(),
+#                            mine=character(),
+#                            stringsAsFactors=FALSE)
 
 parlist <- list()
 for (i in 1:nrow(stylesFrame)) {
@@ -56,8 +60,8 @@ for (i in 1:nrow(stylesFrame)) {
         needParVal <- gsub('([[:punct:]])([[:alpha:]]*)([[:blank:]]*)', "", needPar)
         parlist[[i]] <- needParVal
 }
-parlist <- do.call(rbind, parlist)
-stylesFrame <- cbind(stylesFrame, parlist)
+parlist <- do.call(rbind, parlist, stringsAsFactors = FALSE)
+stylesFrame <- cbind(stylesFrame, parlist, stringsAsFactors = FALSE)
 needParVal <- gsub('([[:punct:]])([[:alpha:]]*)([[:blank:]]*)', "", needPar)
 needParNames <- gsub('([[:punct:]]*)([[:blank:]]*)', "", needPar)
 needParNames <- gsub('[[:digit:]]*', "", needParNames)
@@ -65,25 +69,51 @@ names(stylesFrame) <- c("BeerStyle", "Type", "Link", needParNames) # Rename colu
 
 
 ####Try to scrap beer information table.
-ResultURL <- paste0("http://www.ratebeer.com", "/ajax/top-beer-by-style.asp?", "style=", stylesFrame[1, ]$style,
-                    "&sort=", stylesFrame[1, ]$sort, "&order=", stylesFrame[1, ]$order, "&min=", stylesFrame[1, ]$min, "&max=", stylesFrame[1, ]$max,
-                    "&retired=", stylesFrame[1, ]$retired, "&new=", stylesFrame[1, ]$new, "&mine=", stylesFrame[1, ]$mine)
+###Add a new column "JSLink" to be used for create beers table
+stylesFrame <- mutate(stylesFrame, JSlink = paste0("http://www.ratebeer.com", "/ajax/top-beer-by-style.asp?", "style=", style,
+                                    "&sort=", sort, "&order=", order, "&min=", min, "&max=", max,
+                                    "&retired=", retired, "&new=", new, "&mine=", mine))
 
-library(XML)
-beerTable <- readHTMLTable(ResultURL, as.data.frame = TRUE)[[1]]
-beerLinks <- read_html(ResultURL) %>% html_nodes("a") %>% html_attr("href")
-beerTable[, 1] <- stylesFrame[1, ]$style
-beerTable <- cbind(beerTable[, 1:5], beerLinks)
+makeBeerDF <- function(LinkList){
+        d <- lapply(LinkList, function(i){
+                table <- readHTMLTable(i, as.data.frame = TRUE)[[1]]
+                links <- read_html(i) %>% html_nodes("a") %>% html_attr("href")
+                table[, 1] <- str_extract(i, "\\d+")
+                table <- cbind(table, links)
+        } )
+        do.call(rbind, d)
+}
+
+beerTable <- makeBeerDF(stylesFrame$JSlink)
 names(beerTable) <- c("style", "Name", "Count", "ABV", "Score", "BeerLink")
 
+
+
+ResultURL <- paste0("http://www.ratebeer.com", beerTable[1, ]$BeerLink)
+
+beerGeneralInfo <- read_html(ResultURL)#, as.data.frame = TRUE)
+beerGeneralInfo <- read_html(ResultURL) %>% html_nodes("#container table+ div:nth-child(2) , #_brand4 span , #_aggregateRating6 span , #_description3")# %>% html_attr("href")
+beerGeneralInfo[, 1] <- stylesFrame[1, ]$style
+beerGeneralInfo <- cbind(beerGeneralInfo[, 1:5], beerLinks)
+
+
+
+
+
+
+
+
+
+
+
+
 ###Write dataframes to SQLite database
-
-library("sqldf")
 db <- dbConnect(SQLite(), dbname="BeerDB.sqlite")
-
-dbWriteTable(conn = db, name = "Styles", value = stylesFrame, row.names = FALSE)
-dbWriteTable(conn = db, name = "Beers", value = beerTable, row.names = FALSE)
+dbWriteTable(conn = db, name = "Styles", value = stylesFrame, row.names = FALSE, overwrite = TRUE)
+dbWriteTable(conn = db, name = "Beers", value = beerTable, row.names = FALSE, overwrite = TRUE)
 #dbWriteTable(conn = db, name = “Votes”, value = School, row.names = FALSE)
+dbReadTable(db, "Styles")
+dbReadTable(db, "Beers")
 dbDisconnect(db)
 
 
@@ -91,15 +121,6 @@ dbDisconnect(db)
 
 
 
-#/ajax/top-beer-by-style.asp?style=2&sort=-1&order=0&min=10&max=9999&retired=0&new=0&mine=0&
-#    function loadList(vl) {
-#          var strURL = '/ajax/top-beer-by-style.asp?';
-#             for (var src in vl) {
-#                         strURL += src + '=' + vl[src] + '&';
-#                 }
-#                 console.log(strURL);
-#                 $('#styleList').load(strURL);
-#         }
 
 
 
@@ -114,29 +135,39 @@ dbDisconnect(db)
 
 
 
-
-styleLink <- as.vector(stylesFrame$Link[[1]])
-StylePage <- paste0("http://www.ratebeer.com", styleLink)
-
-#GetBeersTable
-ScriptTXT <- read_html(StylePage) %>% html_nodes("script")
-ScriptTXT <- html_text(ScriptTXT[9]) %>% strsplit("[\r\n\t]") %>% unlist
-needPar <- ScriptTXT[c(6,9,12,15,18,21,24,27)]
-needParVal <- gsub('([[:punct:]])([[:alpha:]]*)([[:blank:]]*)', "", needPar)
-needParNames <- gsub('([[:punct:]]*)([[:blank:]]*)', "", needPar)
-needParNames <- gsub('[[:digit:]]*', "", needParNames)
-
-ParDataFrame <- as.data.frame(rbind(needParVal))
-names(ParDataFrame) <- needParNames
-
-
-
-
-#needPar <- cbind(needParNames, needParVal)
-
-
-
-
+# ResultURL <- paste0("http://www.ratebeer.com", "/ajax/top-beer-by-style.asp?", "style=", stylesFrame[1, ]$style,
+#                     "&sort=", stylesFrame[1, ]$sort, "&order=", stylesFrame[1, ]$order, "&min=", stylesFrame[1, ]$min, "&max=", stylesFrame[1, ]$max,
+#                     "&retired=", stylesFrame[1, ]$retired, "&new=", stylesFrame[1, ]$new, "&mine=", stylesFrame[1, ]$mine)
+# 
+# 
+# 
+# styleLink <- as.vector(stylesFrame$Link[[1]])
+# StylePage <- paste0("http://www.ratebeer.com", styleLink)
+# 
+# #GetBeersTable
+# ScriptTXT <- read_html(StylePage) %>% html_nodes("script")
+# ScriptTXT <- html_text(ScriptTXT[9]) %>% strsplit("[\r\n\t]") %>% unlist
+# needPar <- ScriptTXT[c(6,9,12,15,18,21,24,27)]
+# needParVal <- gsub('([[:punct:]])([[:alpha:]]*)([[:blank:]]*)', "", needPar)
+# needParNames <- gsub('([[:punct:]]*)([[:blank:]]*)', "", needPar)
+# needParNames <- gsub('[[:digit:]]*', "", needParNames)
+# 
+# ParDataFrame <- as.data.frame(rbind(needParVal))
+# names(ParDataFrame) <- needParNames
+# 
+# 
+# 
+# 
+# #needPar <- cbind(needParNames, needParVal)
+# 
+# 
+# 
+# 
+# library(XML)
+# beerTable <- readHTMLTable(ResultURL, as.data.frame = TRUE)[[1]]
+# beerLinks <- read_html(ResultURL) %>% html_nodes("a") %>% html_attr("href")
+# beerTable[, 1] <- stylesFrame[1, ]$style
+# beerTable <- cbind(beerTable[, 1:5], beerLinks)
 
 
 
