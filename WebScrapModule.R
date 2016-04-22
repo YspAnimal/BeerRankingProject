@@ -3,7 +3,7 @@ require(reshape2)
 require(stringr)
 require(plyr)
 require(sqldf)
-
+options(stringsAsFactors = FALSE)
 
 ##Get Beer styles table
 GetBeerStylesDataframe <- function (link) {
@@ -40,16 +40,6 @@ GetBeerStylesDataframe <- function (link) {
 
 ##Get beers list from style link
 stylesFrame <- GetBeerStylesDataframe("http://www.ratebeer.com/beerstyles")
-# ParDataFrame <- data.frame(style=character(),
-#                            sort=character(),
-#                            order=character(),
-#                            min=character(),
-#                            max=character(),
-#                            retired=character(),
-#                            new=character(),
-#                            mine=character(),
-#                            stringsAsFactors=FALSE)
-
 parlist <- list()
 for (i in 1:nrow(stylesFrame)) {
         styleLink <- as.vector(stylesFrame$beer_links[[i]])
@@ -60,7 +50,7 @@ for (i in 1:nrow(stylesFrame)) {
         needParVal <- gsub('([[:punct:]])([[:alpha:]]*)([[:blank:]]*)', "", needPar)
         parlist[[i]] <- needParVal
 }
-parlist <- do.call(rbind, parlist, stringsAsFactors = FALSE)
+parlist <- do.call(rbind, parlist)
 stylesFrame <- cbind(stylesFrame, parlist, stringsAsFactors = FALSE)
 needParVal <- gsub('([[:punct:]])([[:alpha:]]*)([[:blank:]]*)', "", needPar)
 needParNames <- gsub('([[:punct:]]*)([[:blank:]]*)', "", needPar)
@@ -79,25 +69,44 @@ makeBeerDF <- function(LinkList){
                 table <- readHTMLTable(i, as.data.frame = TRUE)[[1]]
                 links <- read_html(i) %>% html_nodes("a") %>% html_attr("href")
                 table[, 1] <- str_extract(i, "\\d+")
-                table <- cbind(table, links)
+                table <- cbind(table, links, stringsAsFactors = FALSE)
         } )
         do.call(rbind, d)
+        names(d) <- c("style", "Name", "Count", "ABV", "Score", "BeerLink")
 }
 
 beerTable <- makeBeerDF(stylesFrame$JSlink)
-names(beerTable) <- c("style", "Name", "Count", "ABV", "Score", "BeerLink")
+#names(beerTable) <- c("style", "Name", "Count", "ABV", "Score", "BeerLink")
 
+makeBeerGeneralInformationDF <- function(BeerLink) {
+        d <- lapply(BeerLink, function(i){
+                URL <- paste0("http://www.ratebeer.com", i)
+                Info <- read_html(URL)
+                Info <- read_html(URL) %>%
+                        html_nodes("#container table+ div:nth-child(2) , #_brand4 span , #_aggregateRating6 span , #_description3") %>%
+                        html_text()
+                Info <- append(Info[c(2,4,5)], URL)
+        })
+        do.call(rbind, d)
+        as.data.frame(d)
+        names(d) <- c("Overall", "Brewed", "Description", "BeerLink")
+        return(d)
+}
+
+BeerGeneralInformation <- makeBeerGeneralInformationDF(beerTable$BeerLink)
+
+BeerGeneralInformation <- as.data.frame(BeerGeneralInformation)
+names(BeerGeneralInformation) <- c("Overall", "Brewed", "Description", "BeerLink")
 
 
 ResultURL <- paste0("http://www.ratebeer.com", beerTable[1, ]$BeerLink)
-
 beerGeneralInfo <- read_html(ResultURL)#, as.data.frame = TRUE)
-beerGeneralInfo <- read_html(ResultURL) %>% html_nodes("#container table+ div:nth-child(2) , #_brand4 span , #_aggregateRating6 span , #_description3")# %>% html_attr("href")
+beerGeneralInfo <- read_html(ResultURL) %>% html_nodes("#container table+ div:nth-child(2) , #_brand4 span , #_aggregateRating6 span , #_description3") %>% html_text()
 beerGeneralInfo[, 1] <- stylesFrame[1, ]$style
 beerGeneralInfo <- cbind(beerGeneralInfo[, 1:5], beerLinks)
 
-
-
+html_attr(beerGeneralInfo, "id")
+test <- html_text(beerGeneralInfo)
 
 
 
@@ -111,9 +120,11 @@ beerGeneralInfo <- cbind(beerGeneralInfo[, 1:5], beerLinks)
 db <- dbConnect(SQLite(), dbname="BeerDB.sqlite")
 dbWriteTable(conn = db, name = "Styles", value = stylesFrame, row.names = FALSE, overwrite = TRUE)
 dbWriteTable(conn = db, name = "Beers", value = beerTable, row.names = FALSE, overwrite = TRUE)
-#dbWriteTable(conn = db, name = “Votes”, value = School, row.names = FALSE)
+dbWriteTable(conn = db, name = "GeneralInfo", value = as.data.frame(BeerGeneralInformation), row.names = FALSE, overwrite = TRUE)
 dbReadTable(db, "Styles")
 dbReadTable(db, "Beers")
+dbReadTable(db, "GeneralInfo")
+
 dbDisconnect(db)
 
 
