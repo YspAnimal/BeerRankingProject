@@ -95,13 +95,17 @@ makeBeerGeneralInformationDF <- function(BeerLink) {
 
 BeerGeneralInformation <- makeBeerGeneralInformationDF(beerTable$BeerLink)
 
-BeerGeneralInformation <- as.data.frame(BeerGeneralInformation)
-names(BeerGeneralInformation) <- c("Overall", "Brewed", "Description", "BeerLink")
+#BeerGeneralInformation <- as.data.frame(BeerGeneralInformation)
+#names(BeerGeneralInformation) <- c("Overall", "Brewed", "Description", "BeerLink")
+
+
+## #container div table:nth-child(8)
+
+
 
 
 ResultURL <- paste0("http://www.ratebeer.com", beerTable[1, ]$BeerLink)
-beerGeneralInfo <- read_html(ResultURL)#, as.data.frame = TRUE)
-beerGeneralInfo <- read_html(ResultURL) %>% html_nodes("#container table+ div:nth-child(2) , #_brand4 span , #_aggregateRating6 span , #_description3") %>% html_text()
+beerGeneralInfo <- read_html(ResultURL) %>% html_nodes("#container div table:nth-child(8)") %>% html_text()
 beerGeneralInfo[, 1] <- stylesFrame[1, ]$style
 beerGeneralInfo <- cbind(beerGeneralInfo[, 1:5], beerLinks)
 
