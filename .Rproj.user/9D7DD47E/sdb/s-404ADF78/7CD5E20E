@@ -1,0 +1,25 @@
+{
+    "contents" : "",
+    "created" : 1461742443322.000,
+    "dirty" : false,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "7CD5E20E",
+    "lastKnownWriteTime" : 32370111954616424,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "cacheKey" : "20tbexgknl",
+        "caption" : "Beers",
+        "contentUrl" : "grid_resource/gridviewer.html?env=&obj=Beers&cache_key=20tbexgknl",
+        "displayedObservations" : "3853",
+        "environment" : "",
+        "object" : "Beers",
+        "totalObservations" : "3853",
+        "variables" : "6"
+    },
+    "relative_order" : 4,
+    "source_on_save" : false,
+    "type" : "r_dataframe"
+}

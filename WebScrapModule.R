@@ -3,6 +3,7 @@ require(reshape2)
 require(stringr)
 require(plyr)
 require(sqldf)
+require(data.table)
 options(stringsAsFactors = FALSE)
 
 ##Get Beer styles table
@@ -63,21 +64,25 @@ names(stylesFrame) <- c("BeerStyle", "Type", "Link", needParNames) # Rename colu
 stylesFrame <- mutate(stylesFrame, JSlink = paste0("http://www.ratebeer.com", "/ajax/top-beer-by-style.asp?", "style=", style,
                                     "&sort=", sort, "&order=", order, "&min=", min, "&max=", max,
                                     "&retired=", retired, "&new=", new, "&mine=", mine))
-
 makeBeerDF <- function(LinkList){
         d <- lapply(LinkList, function(i){
                 table <- readHTMLTable(i, as.data.frame = TRUE)[[1]]
                 links <- read_html(i) %>% html_nodes("a") %>% html_attr("href")
                 table[, 1] <- str_extract(i, "\\d+")
+                links <- paste0("http://www.ratebeer.com", links)
                 table <- cbind(table, links, stringsAsFactors = FALSE)
         } )
-        do.call(rbind, d)
-        names(d) <- c("style", "Name", "Count", "ABV", "Score", "BeerLink")
+        rbindlist(d)
+        #do.call(rbind, d)
+        #as.data.frame(d)
+        #names(d) <- c("style", "Name", "Count", "ABV", "Score", "BeerLink")
+        #return(d)
 }
-
 beerTable <- makeBeerDF(stylesFrame$JSlink)
-#names(beerTable) <- c("style", "Name", "Count", "ABV", "Score", "BeerLink")
+names(beerTable) <- c("style", "Name", "Count", "ABV", "Score", "BeerLink")
 
+
+####Try to scrap General information about beers.
 makeBeerGeneralInformationDF <- function(BeerLink) {
         d <- lapply(BeerLink, function(i){
                 URL <- paste0("http://www.ratebeer.com", i)
@@ -92,32 +97,18 @@ makeBeerGeneralInformationDF <- function(BeerLink) {
         names(d) <- c("Overall", "Brewed", "Description", "BeerLink")
         return(d)
 }
-
 BeerGeneralInformation <- makeBeerGeneralInformationDF(beerTable$BeerLink)
 
-#BeerGeneralInformation <- as.data.frame(BeerGeneralInformation)
-#names(BeerGeneralInformation) <- c("Overall", "Brewed", "Description", "BeerLink")
 
-
-## #container div table:nth-child(8)
-
-
-
-
-ResultURL <- paste0("http://www.ratebeer.com", beerTable[1, ]$BeerLink)
-beerGeneralInfo <- read_html(ResultURL) %>% html_nodes("#container div table:nth-child(8)") %>% html_text()
-beerGeneralInfo[, 1] <- stylesFrame[1, ]$style
-beerGeneralInfo <- cbind(beerGeneralInfo[, 1:5], beerLinks)
-
-html_attr(beerGeneralInfo, "id")
-test <- html_text(beerGeneralInfo)
-
-
-
-
-
-
-
+####Try to scrap user comments and rating scores.
+# ResultURL <- paste0("http://www.ratebeer.com", beerTable[1, ]$BeerLink)
+# beerGeneralInfo <- read_html(ResultURL) %>% html_nodes("#container div table:nth-child(8)") %>% html_text()
+# beerGeneralInfo[, 1] <- stylesFrame[1, ]$style
+# beerGeneralInfo <- cbind(beerGeneralInfo[, 1:5], beerLinks)
+# 
+# html_attr(beerGeneralInfo, "id")
+# test <- html_text(beerGeneralInfo)
+# 
 
 
 ###Write dataframes to SQLite database
@@ -126,7 +117,7 @@ dbWriteTable(conn = db, name = "Styles", value = stylesFrame, row.names = FALSE,
 dbWriteTable(conn = db, name = "Beers", value = beerTable, row.names = FALSE, overwrite = TRUE)
 dbWriteTable(conn = db, name = "GeneralInfo", value = as.data.frame(BeerGeneralInformation), row.names = FALSE, overwrite = TRUE)
 dbReadTable(db, "Styles")
-dbReadTable(db, "Beers")
+str(dbReadTable(db, "Beers"))
 dbReadTable(db, "GeneralInfo")
 
 dbDisconnect(db)
@@ -148,6 +139,12 @@ dbDisconnect(db)
 
 
 
+
+#BeerGeneralInformation <- as.data.frame(BeerGeneralInformation)
+#names(BeerGeneralInformation) <- c("Overall", "Brewed", "Description", "BeerLink")
+
+
+## #container div table:nth-child(8)
 
 
 # ResultURL <- paste0("http://www.ratebeer.com", "/ajax/top-beer-by-style.asp?", "style=", stylesFrame[1, ]$style,
