@@ -2,7 +2,10 @@ require(sqldf)
 require(RSQLite)
 require(tm)
 require(dplyr)
-
+require(Rstem)
+require(Snowball)
+library(wordnet)
+library(wordcloud)
 
 db <- dbConnect(SQLite(), dbname="BeerDB.sqlite")
 BeerStyles <- dbReadTable(db, "Styles")
@@ -20,3 +23,45 @@ Beerdata <- dbFetch(myQuery, n = -1)
 dbDisconnect(db)
 
 temp <- filter(Beerdata, style == "71") %>% select(Description)
+
+tm_map(temp, asPlain)
+temp_txt <- paste(temp$Description, collapse = " ")
+temp.vec <- VectorSource(temp_txt)
+temp.cor <- Corpus(temp.vec)
+#summary(temp.cor)
+#inspect(temp.cor)
+
+temp.cor <- tm_map(temp.cor, content_transformer(tolower))
+temp.cor <- tm_map(temp.cor, removePunctuation)
+temp.cor <- tm_map(temp.cor, removeNumbers)
+#temp.cor <- tm_map(temp.cor, removeNumbers)
+Beerstopwords <- c(stopwords("english"), "beer", "beers", "bottle", "conditioned", "ale", "abbey", "brewed")
+temp.cor <- tm_map(temp.cor, removeWords, Beerstopwords)
+temp.cor <- tm_map(temp.cor, stripWhitespace)
+DTM <- DocumentTermMatrix(temp.cor)
+#TDM <- TermDocumentMatrix(temp.cor)
+#inspect(TDM)
+inspect(DTM)
+DTM_Mat <- as.matrix(DTM)
+frequency <- colSums(as.matrix(DTM))
+frequency <- sort(frequency, decreasing = TRUE)
+head(frequency)
+frequency[which(frequency>=5)]
+
+DTM_Mat <- as.matrix(DTM)
+DTM_v <- sort(colSums(DTM_Mat),decreasing=TRUE)
+DTM_d <- data.frame(word = names(DTM_v),freq=DTM_v)
+table(DTM_d$freq)
+pal2 <- brewer.pal(8,"Dark2")
+png("wordcloud_Beers_Rew.png", width=480,height=300)
+wordcloud(DTM_d$word,DTM_d$freq, scale=c(8,.5),min.freq=2,
+          max.words=Inf, random.order=FALSE, rot.per=.30, colors=pal2)
+dev.off()
+
+
+
+
+
+
+
+

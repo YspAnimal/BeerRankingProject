@@ -86,7 +86,7 @@ names(beerTable) <- c("style", "Name", "Count", "ABV", "Score", "BeerLink")
 makeBeerGeneralInformationDF <- function(BeerLink) {
         d <- lapply(BeerLink, function(i){
                 URL <- paste0("http://www.ratebeer.com", i)
-                Info <- read_html(URL)
+                #Info <- read_html(URL)
                 Info <- read_html(URL) %>%
                         html_nodes("#container table+ div:nth-child(2) , #_brand4 span , #_aggregateRating6 span , #_description3") %>%
                         html_text()
@@ -98,6 +98,33 @@ makeBeerGeneralInformationDF <- function(BeerLink) {
         return(d)
 }
 BeerGeneralInformation <- makeBeerGeneralInformationDF(beerTable$BeerLink)
+
+getBeerReviews <- function(BeerDataframe) {
+        d <- lapply(BeerDataframe$BeerLink, function(i){
+                URL <- #paste0("http://www.ratebeer.com", i)
+                #Info <- read_html(URL)
+                Info <- read_html(URL) %>%
+                        html_nodes("#container div br+ div") %>%
+                        html_text()
+                Info <- append(Info[c(2,4,5)], URL)
+        })
+        do.call(rbind, d)
+        as.data.frame(d)
+        names(d) <- c("Overall", "Brewed", "Description", "BeerLink")
+        return(d)
+}
+
+
+
+BeerGeneralInformation$BeerLink[1]
+        URL <- BeerGeneralInformation$BeerLink[1] #paste0("http://www.ratebeer.com", i)
+                #Info <- read_html(URL)
+                Info <- read_html(URL) %>%
+                html_nodes("#container div br+ div") %>%
+                html_text()
+        Info <- append(Info[c(2,4,5)], URL)
+
+
 
 ###Write dataframes to SQLite database
 db <- dbConnect(SQLite(), dbname="BeerDB.sqlite")

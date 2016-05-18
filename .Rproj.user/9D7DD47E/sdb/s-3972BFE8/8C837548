@@ -1,0 +1,21 @@
+{
+    "collab_server" : "",
+    "contents" : "require(sqldf)\nrequire(RSQLite)\nrequire(tm)\nrequire(dplyr)\nrequire(Rstem)\nrequire(Snowball)\nlibrary(wordnet)\nlibrary(wordcloud)\n\ndb <- dbConnect(SQLite(), dbname=\"BeerDB.sqlite\")\nBeerStyles <- dbReadTable(db, \"Styles\")\nBeers <- dbReadTable(db, \"Beers\")\nGeneralInfo <- dbReadTable(db, \"GeneralInfo\")\n\nSQLQuery <- \"SELECT style, Name, Beers.BeerLink, Description FROM Beers JOIN GeneralInfo\n                ON (Beers.BeerLink = GeneralInfo.BeerLink)\"\n                \n\n#WHERE Beers.BeerLink = 71\"\n\nmyQuery <- dbSendQuery(db, SQLQuery)\nBeerdata <- dbFetch(myQuery, n = -1)\ndbDisconnect(db)\n\ntemp <- filter(Beerdata, style == \"71\") %>% select(Description)\n\ntm_map(temp, asPlain)\ntemp_txt <- paste(temp$Description, collapse = \" \")\ntemp.vec <- VectorSource(temp_txt)\ntemp.cor <- Corpus(temp.vec)\n#summary(temp.cor)\n#inspect(temp.cor)\n\ntemp.cor <- tm_map(temp.cor, content_transformer(tolower))\ntemp.cor <- tm_map(temp.cor, removePunctuation)\ntemp.cor <- tm_map(temp.cor, removeNumbers)\n#temp.cor <- tm_map(temp.cor, removeNumbers)\nBeerstopwords <- c(stopwords(\"english\"), \"beer\", \"beers\", \"bottle\", \"conditioned\", \"ale\", \"abbey\", \"brewed\")\ntemp.cor <- tm_map(temp.cor, removeWords, Beerstopwords)\ntemp.cor <- tm_map(temp.cor, stripWhitespace)\nDTM <- DocumentTermMatrix(temp.cor)\n#TDM <- TermDocumentMatrix(temp.cor)\n#inspect(TDM)\ninspect(DTM)\nDTM_Mat <- as.matrix(DTM)\nfrequency <- colSums(as.matrix(DTM))\nfrequency <- sort(frequency, decreasing = TRUE)\nhead(frequency)\nfrequency[which(frequency>=5)]\n\nDTM_Mat <- as.matrix(DTM)\nDTM_v <- sort(colSums(DTM_Mat),decreasing=TRUE)\nDTM_d <- data.frame(word = names(DTM_v),freq=DTM_v)\ntable(DTM_d$freq)\npal2 <- brewer.pal(8,\"Dark2\")\npng(\"wordcloud_Beers_Rew.png\", width=480,height=300)\nwordcloud(DTM_d$word,DTM_d$freq, scale=c(8,.5),min.freq=2,\n          max.words=Inf, random.order=FALSE, rot.per=.30, colors=pal2)\ndev.off()\n\n\n\n\n\n\n\n\n",
+    "created" : 1461644676178.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2774366902",
+    "id" : "8C837548",
+    "lastKnownWriteTime" : 1463568473,
+    "last_content_update" : 1463568473720,
+    "path" : "C:/R_repositories/OthersData/BeerRankingProject/WordAnalyzeModule.R",
+    "project_path" : "WordAnalyzeModule.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
