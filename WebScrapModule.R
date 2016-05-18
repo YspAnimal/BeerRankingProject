@@ -115,7 +115,7 @@ getBeerReviews <- function(BeerDataframe) {
 }
 
 
-
+#test scrap comments!!!!!
 BeerGeneralInformation$BeerLink[1]
         URL <- BeerGeneralInformation$BeerLink[1] #paste0("http://www.ratebeer.com", i)
                 #Info <- read_html(URL)
