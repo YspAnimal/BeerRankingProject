@@ -12,14 +12,14 @@
     "path" : null,
     "project_path" : null,
     "properties" : {
-        "cacheKey" : "n35px4in3b",
+        "cacheKey" : "oab2kbox1f",
         "caption" : "beerTable",
-        "contentUrl" : "grid_resource/gridviewer.html?env=&obj=beerTable&cache_key=n35px4in3b",
-        "displayedObservations" : 3852,
+        "contentUrl" : "grid_resource/gridviewer.html?env=&obj=beerTable&cache_key=oab2kbox1f",
+        "displayedObservations" : "3852",
         "environment" : "",
         "object" : "beerTable",
-        "totalObservations" : 3852,
-        "variables" : 6
+        "totalObservations" : "3852",
+        "variables" : "6"
     },
     "relative_order" : 5,
     "source_on_save" : false,
