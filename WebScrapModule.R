@@ -117,7 +117,7 @@ makeBeerReviewsDF <- function(BeerLink) {
         #names(d) <- c("Overall", "Brewed", "Description", "BeerLink")
         return(d)
 }
-BeerRew
+
 
 
 #test scrap comments!!!!!
@@ -144,11 +144,14 @@ d <- lapply(BeerGeneralInformation$BeerLink[1:2], function(Link){
                 Info <- read_html(URL) %>% html_nodes("#container div br+ div") %>% html_text() #Scrap all comment at page
                 Info <- Info[1:(length(Info)-2)]
                 Info <- append(Info, Info)
-                do.call(cbind, list(Info, Link))
+                #do.call(cbind, list(Info))
         }        
         #Info <- append(Info[c(2,4,5)], URL)
-        do.call(rbind, list(Info, Link))
+        do.call(cbind, list(Info, Link))
 })
+eee <- do.call(rbind, lapply(d, unlist))
+
+
 eee <- bindlist(d)
 eee <- as.data.frame(d)
 do.call(rbind, d)
