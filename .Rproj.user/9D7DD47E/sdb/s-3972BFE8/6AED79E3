@@ -12,14 +12,14 @@
     "path" : null,
     "project_path" : null,
     "properties" : {
-        "cacheKey" : "p4h7cdaiq2",
+        "cacheKey" : "437u9wtc6m",
         "caption" : "BeerGeneralInformation",
-        "contentUrl" : "grid_resource/gridviewer.html?env=&obj=BeerGeneralInformation&cache_key=p4h7cdaiq2",
-        "displayedObservations" : 3852,
+        "contentUrl" : "grid_resource/gridviewer.html?env=&obj=BeerGeneralInformation&cache_key=437u9wtc6m",
+        "displayedObservations" : "3852",
         "environment" : "",
         "object" : "BeerGeneralInformation",
-        "totalObservations" : 3852,
-        "variables" : 4
+        "totalObservations" : "3852",
+        "variables" : "4"
     },
     "relative_order" : 7,
     "source_on_save" : false,

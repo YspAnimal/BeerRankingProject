@@ -12,13 +12,13 @@
     "path" : null,
     "project_path" : null,
     "properties" : {
-        "cacheKey" : "egugrez8t2",
+        "cacheKey" : "unwvocfnf4",
         "caption" : "eee",
-        "contentUrl" : "grid_resource/gridviewer.html?env=&obj=eee&cache_key=egugrez8t2",
-        "displayedObservations" : "72",
+        "contentUrl" : "grid_resource/gridviewer.html?env=&obj=eee&cache_key=unwvocfnf4",
+        "displayedObservations" : "11613",
         "environment" : "",
         "object" : "eee",
-        "totalObservations" : "72",
+        "totalObservations" : "11613",
         "variables" : "2"
     },
     "relative_order" : 7,

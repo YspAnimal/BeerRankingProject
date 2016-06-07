@@ -103,36 +103,38 @@ BeerGeneralInformation <- makeBeerGeneralInformationDF(beerTable$BeerLink)
 makeBeerReviewsDF <- function(BeerLink) {
         d <- lapply(BeerLink, function(Link){
                 PageNumber <-read_html(Link) %>% html_nodes("b.ballno+ .ballno") %>% html_text() #Scrap max page namber for selected beer
+                InfoV <- c()
                 for (i in c(2:PageNumber)) {
                         URL <- paste0(Link, "1/", i,"/")
                         Info <- read_html(URL) %>% html_nodes("#container div br+ div") %>% html_text() #Scrap all comment at page
                         Info <- Info[1:(length(Info)-2)]
-                        Info <- append(Info, Info)
+                        InfoV <- append(InfoV, Info)
                 }        
-                do.call(cbind, list(Info, Link))
+                do.call(cbind, list(InfoV, Link))
         })
         #do.call(rbind, d)
         #as.data.frame(d)
         #names(d) <- c("Overall", "Brewed", "Description", "BeerLink")
-        do.call(rbind, lapply(d, unlist))
-        #return(d)
+        #do.call(rbind, lapply(d, unlist))
+        return(d)
 }
 
-BeerReviews <- makeBeerReviewsDF(BeerGeneralInformation$BeerLink)
+BeerReviews <- makeBeerReviewsDF(BeerGeneralInformation$BeerLink[1:5])
 
 
 
 d <- lapply(BeerGeneralInformation$BeerLink[1:2], function(Link){
         PageNumber <-read_html(Link) %>% html_nodes("b.ballno+ .ballno") %>% html_text() #Scrap max page namber for selected beer
-        for (i in c(2:4)) {
+        InfoV <- c()
+        for (i in c(2:PageNumber)) {
                 URL <- paste0(Link, "1/", i,"/")
                 Info <- read_html(URL) %>% html_nodes("#container div br+ div") %>% html_text() #Scrap all comment at page
                 Info <- Info[1:(length(Info)-2)]
-                Info <- append(Info, Info)
+                InfoV <- append(InfoV, Info)
                 #do.call(cbind, list(Info))
         }        
         #Info <- append(Info[c(2,4,5)], URL)
-        do.call(cbind, list(Info, Link))
+        do.call(cbind, list(InfoV, Link))
 })
 eee <- do.call(rbind, lapply(d, unlist))
 
@@ -167,9 +169,11 @@ db <- dbConnect(SQLite(), dbname="BeerDB.sqlite")
 dbWriteTable(conn = db, name = "Styles", value = stylesFrame, row.names = FALSE, overwrite = TRUE)
 dbWriteTable(conn = db, name = "Beers", value = beerTable, row.names = FALSE, overwrite = TRUE)
 dbWriteTable(conn = db, name = "GeneralInfo", value = as.data.frame(BeerGeneralInformation), row.names = FALSE, overwrite = TRUE)
+
+
 dbReadTable(db, "Styles")
 str(dbReadTable(db, "Beers"))
-dbReadTable(db, "GeneralInfo")
+BeerGeneralInformation <- dbReadTable(db, "GeneralInfo")
 
 dbDisconnect(db)
 
