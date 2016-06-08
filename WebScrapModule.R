@@ -99,6 +99,7 @@ makeBeerGeneralInformationDF <- function(BeerLink) {
 }
 BeerGeneralInformation <- makeBeerGeneralInformationDF(beerTable$BeerLink)
 
+
 ##Try to scrap beer reviews
 makeBeerReviewsDF <- function(BeerLink) {
         d <- lapply(BeerLink, function(Link){
