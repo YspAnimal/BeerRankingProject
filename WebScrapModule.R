@@ -119,7 +119,7 @@ makeBeerReviewsDF <- function(BeerLink) {
         return(d)
 }
 
-BeerReviews <- makeBeerReviewsDF(BeerGeneralInformation$BeerLink[1:5])
+BeerReviews <- makeBeerReviewsDF(BeerGeneralInformation$BeerLink[1:100])
 
 
 
