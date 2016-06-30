@@ -4,6 +4,7 @@ require(stringr)
 require(plyr)
 require(sqldf)
 require(data.table)
+require(parallel)
 options(stringsAsFactors = FALSE)
 
 ##Get Beer styles table
@@ -102,15 +103,20 @@ BeerGeneralInformation <- makeBeerGeneralInformationDF(beerTable$BeerLink)
 
 ##Try to scrap beer reviews
 makeBeerReviewsDF <- function(BeerLink) {
-        d <- lapply(BeerLink, function(Link){
+        d <- mclapply(BeerLink, function(Link){
                 PageNumber <-read_html(Link) %>% html_nodes("b.ballno+ .ballno") %>% html_text() #Scrap max page namber for selected beer
                 InfoV <- c()
-                for (i in c(2:PageNumber)) {
-                        URL <- paste0(Link, "1/", i,"/")
-                        Info <- read_html(URL) %>% html_nodes("#container div br+ div") %>% html_text() #Scrap all comment at page
-                        Info <- Info[1:(length(Info)-2)]
-                        InfoV <- append(InfoV, Info)
-                }        
+                if (!is.na(PageNumber)) {
+                        if (as.numeric(PageNumber)>2) {
+                                for (i in c(1:as.numeric(PageNumber))) {
+                                        URL <- paste0(Link, "1/", i,"/")
+                                        Info <- read_html(URL) %>% html_nodes("#container div br+ div") %>% html_text() #Scrap all comment at page
+                                        #Info <- Info[1:(length(Info)-2)]
+                                        InfoV <- append(InfoV, Info)
+                                        print(c(Link, PageNumber, i))
+                                }
+                        }        
+                }
                 do.call(cbind, list(InfoV, Link))
         })
         #do.call(rbind, d)
@@ -120,48 +126,36 @@ makeBeerReviewsDF <- function(BeerLink) {
         return(d)
 }
 
-BeerReviews <- makeBeerReviewsDF(BeerGeneralInformation$BeerLink[1:100])
+BeerReviews <- makeBeerReviewsDF(BeerGeneralInformation$BeerLink)
+
+Test <- makeBeerReviewsDF("http://www.ratebeer.com/beer/t-ij-natte/6057/")
 
 
-
-d <- lapply(BeerGeneralInformation$BeerLink[1:2], function(Link){
-        PageNumber <-read_html(Link) %>% html_nodes("b.ballno+ .ballno") %>% html_text() #Scrap max page namber for selected beer
-        InfoV <- c()
+PageNumber <-read_html("http://www.ratebeer.com/beer/t-ij-natte/6057/") %>% html_nodes("b.ballno+ .ballno") %>% html_text() #Scrap max page namber for selected beer
+InfoV <- c()
+if ((!is.na(PageNumber))&(PageNumber>2)) {
         for (i in c(2:PageNumber)) {
-                URL <- paste0(Link, "1/", i,"/")
+                URL <- paste0("http://www.ratebeer.com/beer/la-choulette-de-noel/23326/", "1/", i,"/")
                 Info <- read_html(URL) %>% html_nodes("#container div br+ div") %>% html_text() #Scrap all comment at page
-                Info <- Info[1:(length(Info)-2)]
+                #Info <- Info[1:(length(Info)-2)]
                 InfoV <- append(InfoV, Info)
-                #do.call(cbind, list(Info))
+                print(c("http://www.ratebeer.com/beer/la-choulette-de-noel/23326/", PageNumber, i))
         }        
-        #Info <- append(Info[c(2,4,5)], URL)
-        do.call(cbind, list(InfoV, Link))
-})
-eee <- do.call(rbind, lapply(d, unlist))
+}
 
 
-eee <- bindlist(d)
-eee <- as.data.frame(d)
-do.call(rbind, d)
-#test scrap comments!!!!!
-# BeerGeneralInformation$BeerLink[1]
-#         URL <- BeerGeneralInformation$BeerLink[1]
-#         PageNumber <-read_html(URL) %>% html_nodes("b.ballno+ .ballno") %>% html_text() #Scrap max page namber for selected beer
-#         for (i in c(2:3)) {
-#                 URLf <- paste0(URL, "1/", i,"/")
-#                 Info <- read_html(URLf) %>% html_nodes("#container div br+ div") %>% html_text() #Scrap all comment at page
-#                 Info <- Info[1:(length(Info)-2)]
-#                 Info <- append(Info, Info)
-#         }        
-# t <- cbind(Info, URL)
-#         
-#         
-#         
-#         Infot <- read_html(URL) %>%
-#                 html_nodes("#container div br+ div") %>%
-#                 html_text()     
 
-        
+
+
+
+
+
+###Read dataframe fro SQLite database to enviroment
+db <- dbConnect(SQLite(), dbname="BeerDB.sqlite")
+stylesFrame <- dbReadTable(db, "Styles")
+beerTable <- dbReadTable(db, "Beers")
+BeerGeneralInformation <- dbReadTable(db, "GeneralInfo")
+dbDisconnect(db)
 
 
 
@@ -188,6 +182,50 @@ dbDisconnect(db)
 
 
 
+
+
+
+#test scrap comments!!!!!
+# BeerGeneralInformation$BeerLink[1]
+#         URL <- BeerGeneralInformation$BeerLink[1]
+#         PageNumber <-read_html(URL) %>% html_nodes("b.ballno+ .ballno") %>% html_text() #Scrap max page namber for selected beer
+#         for (i in c(2:3)) {
+#                 URLf <- paste0(URL, "1/", i,"/")
+#                 Info <- read_html(URLf) %>% html_nodes("#container div br+ div") %>% html_text() #Scrap all comment at page
+#                 Info <- Info[1:(length(Info)-2)]
+#                 Info <- append(Info, Info)
+#         }        
+# t <- cbind(Info, URL)
+#         
+#         
+#         
+#         Infot <- read_html(URL) %>%
+#                 html_nodes("#container div br+ div") %>%
+#                 html_text()     
+
+
+
+
+# d <- lapply(BeerGeneralInformation$BeerLink[1:2], function(Link){
+#         PageNumber <-read_html(Link) %>% html_nodes("b.ballno+ .ballno") %>% html_text() #Scrap max page namber for selected beer
+#         InfoV <- c()
+#         for (i in c(2:PageNumber)) {
+#                 URL <- paste0(Link, "1/", i,"/")
+#                 Info <- read_html(URL) %>% html_nodes("#container div br+ div") %>% html_text() #Scrap all comment at page
+#                 Info <- Info[1:(length(Info)-2)]
+#                 InfoV <- append(InfoV, Info)
+#                 #do.call(cbind, list(Info))
+#         }        
+#         #Info <- append(Info[c(2,4,5)], URL)
+#         do.call(cbind, list(InfoV, Link))
+# })
+# eee <- do.call(rbind, lapply(d, unlist))
+# 
+# 
+# eee <- bindlist(d)
+# eee <- as.data.frame(d)
+# do.call(rbind, d)
+# 
 
 
 
