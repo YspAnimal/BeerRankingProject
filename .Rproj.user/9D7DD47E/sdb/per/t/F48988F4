@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "require(stats)\nplot(cars)\nlines(lowess(cars))\n\nplot(sin, -pi, 2*pi) # see ?plot.function\n\n## Discrete Distribution Plot:\n#plot(table(rpois(100, 5)), type = \"h\", col = \"red\", lwd = 10,\n#     main = \"rpois(100, lambda = 5)\")\n\n## Simple quantiles/ECDF, see ecdf() {library(stats)} for a better one:\n#plot(x <- sort(rnorm(47)), type = \"s\", main = \"plot(x, type = \\\"s\\\")\")\n#points(x, cex = .5, col = \"dark red\")\n",
+    "created" : 1472026588939.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3764413622",
+    "id" : "F48988F4",
+    "lastKnownWriteTime" : 1406883264,
+    "last_content_update" : 1406883264,
+    "path" : "C:/R_repositories/OthersData/OLD/11.R",
+    "project_path" : null,
+    "properties" : {
+    },
+    "relative_order" : 8,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

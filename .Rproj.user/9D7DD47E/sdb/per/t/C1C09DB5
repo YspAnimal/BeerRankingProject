@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "complete <- function(directory, id = 1:332) {\n  takegooddata <- function(file){\n    tmpdata <- read.csv(file)\n    gooddata <- complete.cases(tmpdata)\n    tmpdata <- tmpdata[gooddata, ]\n  }\n  \n  takecomplete <- function(data) {\n    nrow(data)\n  }\n\n  colnames <- c(\"id\", \"nobs\")\n  data <- data.frame()\n  files <- list.files(directory, full.names = T)\n  for (i in id) {\n    nobs <- nrow(takegooddata(files[i]))\n    data <- rbind(data, c(i, nobs))\n  }\n  names(data) <- colnames\n  data\n\n}",
+    "created" : 1472026596462.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1565101479",
+    "id" : "C1C09DB5",
+    "lastKnownWriteTime" : 1437041182,
+    "last_content_update" : 1437041182,
+    "path" : "C:/R_repositories/OthersData/OLD/complete.R",
+    "project_path" : null,
+    "properties" : {
+    },
+    "relative_order" : 10,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

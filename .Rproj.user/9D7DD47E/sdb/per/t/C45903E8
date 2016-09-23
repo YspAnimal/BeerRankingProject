@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "#print(shapiro.test(iris[,\"Petal.Length\"]))\n# library(\"beeswarm\")\n# boxplot(iris)\n# beeswarm(iris, add=TRUE)\n#qqnorm(iris[,\"Petal.Width\"], main=\"\")\n#qqline(iris[,\"Petal.Width\"], col=2)\n\nlibrary(rgl)\n\nplot3d(randu)\n\n",
+    "created" : 1472026592215.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "928231603",
+    "id" : "C45903E8",
+    "lastKnownWriteTime" : 1409834775,
+    "last_content_update" : 1409834775,
+    "path" : "C:/R_repositories/OthersData/OLD/11111.R",
+    "project_path" : null,
+    "properties" : {
+    },
+    "relative_order" : 9,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

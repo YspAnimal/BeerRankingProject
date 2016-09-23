@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "library(\"beeswarm\")\nusdrub <- read.delim(\"~/R Scripts/USDRUB2014.txt\", dec=\" \")\nView(usdrub)\n#usdrub[,5] <- as.numeric(usdrub[,5])\nusdrubDD <- usdrub[,c(\"??????\", \"????\")]\nprint(usdrubDD)\nnormality3 <- function(df, p=.05)\n{\n  lapply(df, function(.x) ifelse(shapiro.test(.x)$p.value > p, \"NORMAL\", \"NOT NORMAL\"))\n}\n\nusdrubDD.list <- unstack(usdrubDD)\nprint(usdrubDD.list)\nprint(normality3(usdrubDD.list, 0.05))\n\nattach(usdrubDD)\nboxplot(????~??????,na.action=na.pass)\nbeeswarm(????~??????,na.action=na.pass)\n\n \ndetach(usdrubDD)",
+    "created" : 1472026604374.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "4092086216",
+    "id" : "F5DEB7A3",
+    "lastKnownWriteTime" : 1419924316,
+    "last_content_update" : 1419924316,
+    "path" : "C:/R_repositories/OthersData/OLD/usdrub2014.R",
+    "project_path" : null,
+    "properties" : {
+    },
+    "relative_order" : 11,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

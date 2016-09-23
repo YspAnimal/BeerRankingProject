@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "download.file(\"https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2Fss06hid.csv \", \"DatasetTest.csv\", \"auto\")",
+    "created" : 1472026576380.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "297206477",
+    "id" : "7FEBE84C",
+    "lastKnownWriteTime" : 1441878528,
+    "last_content_update" : 1441878528,
+    "path" : "C:/R_repositories/OthersData/Test.R",
+    "project_path" : null,
+    "properties" : {
+    },
+    "relative_order" : 7,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

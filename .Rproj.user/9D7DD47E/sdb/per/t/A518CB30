@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "library(\"beeswarm\")\nReestrRegion <- read.delim(\"~/R Scripts/Reestr.txt\", dec=\",\")\nView(ReestrRegion)\nReestrRegion[,2] <- as.numeric(ReestrRegion[,2])\nTemp<-ReestrRegion[sample(c(1:40237),1000),]\nattach(Temp)\n\nboxplot(?????..????~???.??????????,na.action=na.pass)\nbeeswarm(?????..????~???.??????????,na.action=na.pass, add=TRUE)\n\n#hist(as.integer(?????..????))\n\ndetach(Temp)\n\n",
+    "created" : 1472026611931.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2082103895",
+    "id" : "A518CB30",
+    "lastKnownWriteTime" : 1419922731,
+    "last_content_update" : 1419922731,
+    "path" : "C:/R_repositories/OthersData/OLD/TestPlots.R",
+    "project_path" : null,
+    "properties" : {
+    },
+    "relative_order" : 12,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
