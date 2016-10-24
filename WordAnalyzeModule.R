@@ -3,22 +3,37 @@ require(RSQLite)
 require(tm)
 require(dplyr)
 require(Rstem)
-require(Snowball)
+#require(Snowball)
 library(wordnet)
 library(wordcloud)
+library(RODBCext)
 
+db1 <- dbConnect(SQLite(), dbname="NewBase/BeerDB.sqlite")
 db <- dbConnect(SQLite(), dbname="BeerDB.sqlite")
-BeerStyles <- dbReadTable(db, "Styles")
-Beers <- dbReadTable(db, "Beers")
-GeneralInfo <- dbReadTable(db, "GeneralInfo")
 
-SQLQuery <- "SELECT style, Name, Beers.BeerLink, Description FROM Beers JOIN GeneralInfo
+BeerStyles <- dbReadTable(db1, "Styles")
+Beers <- dbReadTable(db1, "Beers")
+GeneralInfo <- dbReadTable(db1, "GeneralInfo")
+BeerReviews <- dbReadTable(db1, "BeerReviewsNew")
+
+
+
+
+
+
+
+SQLQueryStyles <- "SELECT BeerStyle, Type, style FROM BeerStyles"
+
+SQLQueryDescription <- "SELECT style, Name, Beers.BeerLink, Description FROM Beers JOIN GeneralInfo
                 ON (Beers.BeerLink = GeneralInfo.BeerLink)"
                 
+SQLQueryReviews <- "SELECT style, Name, Beers.BeerLink, V2 FROM Beers JOIN BeerReviewsNew
+                ON (Beers.BeerLink = BeerReviewsNew.V1)"
+
 
 #WHERE Beers.BeerLink = 71"
 
-myQuery <- dbSendQuery(db, SQLQuery)
+myQuery <- dbSendQuery(db1, SQLQueryReviews)
 Beerdata <- dbFetch(myQuery, n = -1)
 dbDisconnect(db)
 
