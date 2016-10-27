@@ -1,21 +1,29 @@
-# Text of the books downloaded from:
-# A Mid Summer Night's Dream:
-#  http://www.gutenberg.org/cache/epub/2242/pg2242.txt
-# The Merchant of Venice:
-#  http://www.gutenberg.org/cache/epub/2243/pg2243.txt
-# Romeo and Juliet:
-#  http://www.gutenberg.org/cache/epub/1112/pg1112.txt
+
 
 function(input, output, session) {
     # Define a reactive expression for the document term matrix
+    # Drop-down selection box for which data set
+    output$choose_Type <- renderUI({
+        selectInput("Type", "Type", as.list(Types))
+    })
+    
+    output$choose_Style <- renderUI({
+        if(is.null(input$Type))
+            return()
+        Styles <- GetStyles(input$Type)
+        selectInput("Style", "Styles", as.list(Styles))
+    })
+    
     terms <- reactive({
+        if(is.null(input$Style))
+            return()
         # Change when the "update" button is pressed...
         input$update
         # ...but not for anything else
         isolate({
             withProgress({
                 setProgress(message = "Processing corpus...")
-                getTermMatrix(input$selection)
+                getTermMatrix(input$Style)
             })
         })
     })
@@ -23,9 +31,11 @@ function(input, output, session) {
     # Make the wordcloud drawing predictable during a session
     wordcloud_rep <- repeatable(wordcloud)
     
-    output$plot <- renderPlot({
+    output$plotReviews <- renderPlot({
+        if(is.null(input$Style))
+            return()
         v <- terms()
-        wordcloud_rep(names(v), v, scale=c(4,0.5),
+        wordcloud_rep(v$word, v$freq, scale=c(4,0.5),
                       min.freq = input$freq, max.words=input$max,
                       colors=brewer.pal(8, "Dark2"))
     })

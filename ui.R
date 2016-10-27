@@ -1,29 +1,28 @@
 fluidPage(
     # Application title
-    titlePanel("BEER Cloud"),
+    titlePanel("Beer reviews Cloud"),
     
     sidebarLayout(
         # Sidebar with a slider and selection inputs
         sidebarPanel(
-            selectInput("selection", "Choose a Type:",
-                        choices = Types),
-
-            selectInput("selection", "Choose a StyleType:",
-                        choices = Styles),
+            uiOutput("choose_Type"),
             
-            actionButton("update", "Change"),
-            hr(),
+            uiOutput("choose_Style"),
+            
             sliderInput("freq",
-                        "Minimum Frequency:",
-                        min = 1,  max = 50, value = 15),
+                         "Minimum Frequency:",
+                         min = 10,  max = 200, value = 100),
             sliderInput("max",
-                        "Maximum Number of Words:",
-                        min = 1,  max = 300,  value = 100)
-        ),
+                         "Maximum Number of Words:",
+                         min = 30,  max = 200,  value = 100),
+            hr(),
+            actionButton("update", "Change")
+            ),
         
         # Show Word Cloud
         mainPanel(
-            plotOutput("plot")
+            #plotOutput("plotDescriptions"),
+            plotOutput("plotReviews")
         )
     )
 )
