@@ -5,20 +5,17 @@ require(tm)
 require(dplyr)
 library(wordcloud)
 library(memoise)
+require(RColorBrewer)
 #library(RODBCext)
 #require(Rstem)
 #require(Snowball)
 #library(wordnet)
-
-
 
 db <- dbConnect(SQLite(), dbname="BeerDB.sqlite")
 SQLQueryTypesStyles <- "SELECT BeerStyle, Type, style FROM Styles"
 myQuery <- dbSendQuery(db, SQLQueryTypesStyles)
 TypesFrame <- dbFetch(myQuery, n = -1)
 Types <- unique(TypesFrame$Type)
-#Styles <- 
-    
 dbDisconnect(db)
 
 GetStyles <- function(type){
@@ -53,9 +50,13 @@ getTermMatrix <- memoise(function(style){
     temp.cor <- tm_map(temp.cor, removePunctuation)
     temp.cor <- tm_map(temp.cor, removeNumbers)
     #temp.cor <- tm_map(temp.cor, removeNumbers)
-    Beerstopwords <- c(stopwords("english"),"aroma", "appearance","taste", "palate","overall","beer", "beers", "bottle", "conditioned", "ale", "abbey", "brewed", "beer", "ale", "brewered", "abbey", "bottle", "aroma", "flavour")
+    Beerstopwords <- c(stopwords("english"),"aroma", "appearance","taste", 
+                       "palate","overall","beer", "beers", "bottle", "conditioned", 
+                       "ale", "abbey", "brewed", "beer", "ale", "brewered", "abbey", 
+                       "bottle", "aroma", "flavour", "gagooglefillslotbeerpage")
     temp.cor <- tm_map(temp.cor, removeWords, Beerstopwords)
     temp.cor <- tm_map(temp.cor, stripWhitespace)
+    #DTM <- TermDocumentMatrix(temp.cor)
     DTM <- DocumentTermMatrix(temp.cor)
     DTM_Mat <- as.matrix(DTM)
     DTM_Mat <- sort(colSums(DTM_Mat),decreasing=TRUE)
