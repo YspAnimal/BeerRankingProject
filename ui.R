@@ -14,7 +14,7 @@ fluidPage(
                          min = 10,  max = 200, value = 100),
             sliderInput("max",
                          "Maximum Number of Words:",
-                         min = 30,  max = 200,  value = 100),
+                         min = 30,  max = 500,  value = 100),
             hr(),
             actionButton("update", "Change")
             ),
@@ -22,7 +22,10 @@ fluidPage(
         # Show Word Cloud
         mainPanel(
             #plotOutput("plotDescriptions"),
-            plotOutput("plotReviews")
+            tabsetPanel(type = "tabs", 
+                tabPanel("As product is"),
+                tabPanel("As people think", plotOutput("plotReviews"))
+            )
         )
     )
 )

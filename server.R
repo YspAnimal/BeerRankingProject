@@ -36,7 +36,7 @@ function(input, output, session) {
             return()
         v <- terms()
         wordcloud_rep(v$word, v$freq, scale=c(4,0.5),
-                      min.freq = input$freq, max.words=input$max,
-                      colors=brewer.pal(8, "Dark2"))
+                      min.freq = input$freq, max.words=input$max, random.order=FALSE,
+                      colors=brewer.pal(8, "Dark2"), vfont=c("gothic english", "plain"), rot.per=.45)
     })
-}
+}#colors=brewer.pal(8, "Dark2")
